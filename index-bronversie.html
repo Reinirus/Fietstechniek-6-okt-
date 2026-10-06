@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d2433">
+  <meta name="description" content="Interactieve fietstechniekrace voor leerlingen in het Praktijkonderwijs.">
+  <title>Fietstechniek Race</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d2433'/%3E%3Ccircle cx='18' cy='43' r='10' fill='none' stroke='%23ffd24a' stroke-width='5'/%3E%3Ccircle cx='47' cy='43' r='10' fill='none' stroke='%23ffd24a' stroke-width='5'/%3E%3Cpath d='M18 43 29 25h9l9 18M29 25l9 18H18m8-25h9' fill='none' stroke='%23f36b21' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">⚙</span><span>FIETSTECHNIEK <strong>RACE</strong></span></div>
+    <div class="statusbar">
+      <span id="roundPill" class="round-pill">Ronde 1</span>
+      <span id="phasePill" class="phase-pill">Aanmelden</span>
+      <span class="timer" aria-label="Speeltijd"><span aria-hidden="true">⏱</span> <b id="timer">00:00.0</b></span>
+      <button id="soundBtn" class="icon-btn" type="button" aria-label="Geluid uitzetten">🔊</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="setupScreen" class="screen active workshop-screen">
+      <div class="setup-panel">
+        <p id="missionLabel" class="eyebrow">NIEUWE MISSIE</p>
+        <h1>Bouw je fiets. Stuur naar de finish.</h1>
+        <p class="lead">Vul je naam en leeftijd in. Het spel kiest daarna automatisch de juiste fiets, montage en route. Hoe ouder je bent, hoe groter de technische uitdaging.</p>
+
+        <div class="player-setup">
+          <div class="section-title">
+            <div><span>Wie doen er mee?</span><small>2 tot 4 leerlingen · kies per leerling 12, 13 of 14 jaar</small></div>
+            <button id="addPlayerBtn" class="small-btn" type="button">+ speler</button>
+          </div>
+          <div id="playerInputs" class="player-inputs"></div>
+        </div>
+
+        <div class="age-guide" aria-label="Leeftijdsniveaus">
+          <div><b>12</b><span><strong>Stadsfiets basis</strong><small>8 onderdelen · 10 km</small></span></div>
+          <div><b>13</b><span><strong>Stadsfiets plus</strong><small>12 onderdelen · 15 km</small></span></div>
+          <div><b>14</b><span><strong>Mountainbike</strong><small>16 onderdelen · 22,5 km</small></span></div>
+        </div>
+
+        <div class="how-row" aria-label="Speluitleg">
+          <div><b>1</b><span>Leeftijd bepaalt<br>fiets en onderdelen</span></div>
+          <div><b>2</b><span>Ontwijk hindernissen<br>en tegenliggers</span></div>
+          <div><b>3</b><span>Voltooi jouw route<br>en verdien het achterlicht</span></div>
+        </div>
+
+        <button id="startBuildBtn" class="primary-btn" type="button">Open de werkplaats <span aria-hidden="true">→</span></button>
+        <p id="setupError" class="error" role="alert"></p>
+      </div>
+    </section>
+
+    <section id="buildScreen" class="screen">
+      <div class="game-heading">
+        <div>
+          <p class="eyebrow">WERKPLAATS · SPELER <span id="playerTurnNumber">1</span> · <span id="buildProfile">12 JAAR</span></p>
+          <h2><span id="builderName"></span> bouwt de fiets</h2>
+          <p id="buildInstruction">Sleep het onderdeel naar de oplichtende plek. Tikken werkt ook.</p>
+        </div>
+        <div class="build-score"><span>Gemonteerd</span><strong><span id="buildCount">0</span>/<span id="buildTotal">8</span></strong></div>
+      </div>
+
+      <div class="build-layout">
+        <div class="bike-bay">
+          <img id="buildBikeImage" src="assets/bike-frame-workshop.png" alt="Echt fietsframe op een montagestandaard in een professionele fietswerkplaats">
+          <div class="photo-shade"></div>
+          <div class="assembly-board" aria-label="Fiets monteren">
+            <div id="bikeHotspots" class="hotspots"></div>
+          </div>
+          <div class="target-callout"><span id="taskNumber">Opdracht 1</span><strong id="targetPart"></strong></div>
+        </div>
+        <aside class="parts-tray">
+          <h3>Onderdelenrek</h3>
+          <p>Sleep het juiste onderdeel. Of tik eerst het onderdeel en daarna de plek.</p>
+          <div id="partsGrid" class="parts-grid"></div>
+          <div id="buildFeedback" class="feedback" aria-live="polite"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="approvalScreen" class="screen approval-screen">
+      <div class="approval-card">
+        <div class="approval-stamp" aria-hidden="true">✓</div>
+        <p class="eyebrow">TECHNISCHE KEURING</p>
+        <h2>De fiets is goedgekeurd!</h2>
+        <p><strong id="approvedPlayer"></strong>, <span id="approvalSummary">de fiets is goedgekeurd. Voltooi nu jouw route en verdien het achterlicht.</span></p>
+        <div class="control-demo" aria-label="Besturing"><span></span><kbd>↑</kbd><span></span><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></div>
+        <p class="control-note"><b>↑</b> fietsen · <b>← →</b> vrij over het fietspad · <b>↓</b> remmen en stoppen<br>Blijf op het fietspad en stop altijd voor rood licht.</p>
+        <button id="startRideBtn" class="primary-btn" type="button">Ik ben klaar — start parcours</button>
+      </div>
+    </section>
+
+    <section id="raceScreen" class="screen race-screen">
+      <div class="game-heading race-heading">
+        <div>
+          <p class="eyebrow">PARCOURS · SPELER <span id="raceTurnNumber">1</span> · <span id="raceProfile">12 JAAR</span></p>
+          <h2><span id="riderName"></span> fietst</h2>
+          <p id="raceDescription">Fiets door een echte Nederlandse omgeving. Ieder level wordt smaller, drukker en sneller.</p>
+        </div>
+        <div class="race-stats">
+          <span>Level <b id="levelText">1 / 10</b></span>
+          <span>Afstand <b id="distanceText">0,0 / 10 km</b></span>
+          <span>Lichtpunten <b id="lightPointsText">0 / 10</b></span>
+          <span>Straf <b id="penaltyText">0 sec</b></span>
+        </div>
+      </div>
+
+      <div class="course-shell">
+        <div class="route-progress" aria-label="Voortgang lange route"><span id="routeProgressBar"></span></div>
+        <canvas id="courseCanvas" width="1200" height="700" aria-label="Realistische fietsroute gezien van achter de fietser"></canvas>
+        <div class="level-hud"><strong id="environmentText">Woonwijk</strong><span id="difficultyText">Niveau 1 · rustig</span></div>
+        <div id="trafficAlert" class="traffic-alert hidden" aria-live="assertive">
+          <span class="mini-light"><i></i><i></i><i></i></span>
+          <strong id="trafficText">ROOD — STOP!</strong>
+        </div>
+        <div id="raceMessage" class="race-message">Druk op ↑ om vooruit te fietsen</div>
+        <div class="key-hint" aria-hidden="true"><span>Houd ↑ ingedrukt</span><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></div>
+      </div>
+
+      <aside id="challengePanel" class="challenge-panel hidden" aria-live="assertive">
+        <div class="challenge-top">
+          <div><p id="challengeType" class="eyebrow">VRAAG</p><h3><span id="challengePlayer"></span> staat stil!</h3></div>
+          <div id="challengeIcon" class="sprite large" aria-hidden="true"></div>
+        </div>
+        <p id="challengeQuestion" class="question"></p>
+        <div id="answerButtons" class="answers"></div>
+        <div id="challengeFeedback" class="feedback" aria-live="polite"></div>
+      </aside>
+
+      <aside id="levelPanel" class="level-panel hidden" aria-live="assertive">
+        <div class="level-badge">✓</div>
+        <p class="eyebrow">LEVEL GEHAALD</p>
+        <h3 id="levelCompleteTitle">Level 1 voltooid</h3>
+        <p id="levelCompleteText">Je verdient 1 lichtpunt.</p>
+        <button id="nextLevelBtn" class="primary-btn" type="button">Start level 2</button>
+      </aside>
+
+      <aside id="crashPanel" class="crash-panel hidden" aria-live="assertive">
+        <div class="crash-symbol" aria-hidden="true">!</div>
+        <p class="eyebrow">BOTSING</p>
+        <h3>Tegenligger geraakt</h3>
+        <p>Dit level begint opnieuw. Kijk goed vooruit en stuur op tijd opzij.</p>
+      </aside>
+    </section>
+
+    <section id="rearLightScreen" class="screen rear-light-screen">
+      <div class="game-heading">
+        <div>
+          <p class="eyebrow">BELONING ONTGRENDELD</p>
+          <h2>Monteer het achterlicht</h2>
+          <p><span id="rearLightPlayer"></span> heeft alle <span id="rewardLevelTotal">10</span> levels gehaald. Plaats het verdiende achterlicht op de lege plek.</p>
+        </div>
+        <div class="light-score"><span>Lichtpunten</span><strong><span id="rewardPoints">10</span> / <span id="rewardPointsTotal">10</span></strong></div>
+      </div>
+      <div class="reward-layout">
+        <div class="bike-bay reward-bike-bay">
+          <img id="rewardBikeImage" src="assets/bike-frame-workshop.png" alt="Fiets in een echte werkplaats met een lege plek voor het achterlicht">
+          <div class="photo-shade"></div>
+          <div id="rewardBikeParts" class="reward-bike-parts" aria-hidden="true"></div>
+          <button id="rearLightTarget" class="rear-light-target" type="button" aria-label="Lege montageplek voor het achterlicht"><b>LEGE PLEK</b><small>Achterlicht</small></button>
+        </div>
+        <aside class="parts-tray reward-tray">
+          <p class="eyebrow">VERDIEND MET <span id="rewardNeed">10</span> LICHTPUNTEN</p>
+          <h3>Nieuw achterlicht</h3>
+          <p>Sleep het achterlicht naar de oplichtende plek achter op de fiets. Tikken werkt ook.</p>
+          <button id="rearLightPart" class="rear-light-part" type="button" draggable="true">
+            <img src="assets/rear-light.png" alt="Realistisch rood fietsachterlicht met montagebeugel">
+            <strong>Achterlicht</strong>
+            <small>Sleep of tik</small>
+          </button>
+          <div id="rearLightFeedback" class="feedback" aria-live="polite"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="betweenScreen" class="screen approval-screen">
+      <div class="approval-card">
+        <p class="eyebrow">FINISH BEREIKT</p>
+        <h2><span id="finishedPlayer"></span> is binnen!</h2>
+        <p id="turnSummary"></p>
+        <p class="next-player"><strong id="nextPlayer"></strong> is nu aan de beurt. Geef het toetsenbord door.</p>
+        <button id="nextTurnBtn" class="primary-btn" type="button">Start volgende werkplaatsbeurt</button>
+      </div>
+    </section>
+
+    <section id="resultsScreen" class="screen results-screen">
+      <div class="results-card">
+        <p class="eyebrow">EINDUITSLAG</p>
+        <h2>Wie voltooit zijn niveau het snelst?</h2>
+        <p>Montagetijd + fietstijd + strafseconden bepalen de uitslag. Vergelijk tijden vooral binnen dezelfde leeftijd.</p>
+        <div id="podium" class="podium"></div>
+        <div id="resultList" class="result-list"></div>
+        <button id="restartBtn" class="primary-btn" type="button">Nog een race — nieuwe route</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
